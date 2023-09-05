@@ -1,5 +1,4 @@
 #import pytesseract
-import datetime
 import pyautogui
 from pynput import mouse
 import time
@@ -30,7 +29,7 @@ class ClickListener:
 
 # Create an EasyOCR Reader instance
 reader = easyocr.Reader(['ja'])
-
+import matplotlib.pyplot as plt
 def capture_and_read(x, y, width, height, mask_type=None):
     # Capture the selected portion of the screen
     screenshot = pyautogui.screenshot(region=(x, y, width, height))
@@ -40,13 +39,25 @@ def capture_and_read(x, y, width, height, mask_type=None):
     screenshot_np = np.array(screenshot_rgb)
 
     # Apply mask based on the given argument
+
     if mask_type == 'black':
-        mask = np.all(screenshot_np != [255, 255, 255], axis=-1)
+        mask = np.all(screenshot_np - [255, 255, 255] < , axis=-1)
         screenshot_np[mask] = [0, 0, 0]
     elif mask_type == 'white':
         mask = np.all(screenshot_np != [0, 0, 0], axis=-1)
         screenshot_np[mask] = [255, 255, 255]
+        # Mask for white pixels
+        white_mask = np.all(screenshot_np == [255, 255, 255], axis=-1)
+
+        # Flip white pixels to black
+        screenshot_np[white_mask] = [0, 0, 0]
+
+        # Flip black pixels to white
+        screenshot_np[~white_mask] = [255, 255, 255]    
     
+    #plt.imshow(screenshot_np)
+    #plt.axis('off')  # to turn off axis numbers
+    #plt.show()
     # Use EasyOCR to extract text
     results = reader.readtext(screenshot_np)
     
@@ -72,10 +83,11 @@ def main():
     width, height = x2 - x1, y2 - y1
     
     while(True):
-        extracted_text = capture_and_read(x1, y1, width, height)
+        extracted_text = capture_and_read(x1, y1, width, height, args.mask)
         #print(extracted_text)
         pyperclip.copy(extracted_text)
-        time.sleep(2)
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
+
