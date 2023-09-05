@@ -39,11 +39,15 @@ def capture_and_read(x, y, width, height, mask_type=None):
     screenshot_np = np.array(screenshot_rgb)
 
     # Apply mask based on the given argument
-
+    threshold_distance = 30  # example value, adjust as necessary
+    
     if mask_type == 'black':
-        mask = np.all(screenshot_np != [255, 255, 255], axis=-1)
+        distance_from_white = np.linalg.norm(screenshot_np - [255, 255, 255], axis=-1)
+        mask = distance_from_white > threshold_distance
         screenshot_np[mask] = [0, 0, 0]
     elif mask_type == 'white':
+        distance_from_black = np.linalg.norm(screenshot_np - [0, 0, 0], axis=-1)
+        mask = distance_from_black > threshold_distance
         mask = np.all(screenshot_np != [0, 0, 0], axis=-1)
         screenshot_np[mask] = [255, 255, 255]
         # Mask for white pixels
@@ -55,9 +59,9 @@ def capture_and_read(x, y, width, height, mask_type=None):
         # Flip black pixels to white
         screenshot_np[~white_mask] = [255, 255, 255]    
     
-    #plt.imshow(screenshot_np)
-    #plt.axis('off')  # to turn off axis numbers
-    #plt.show()
+    plt.imshow(screenshot_np)
+    plt.axis('off')  # to turn off axis numbers
+    plt.show()
     # Use EasyOCR to extract text
     results = reader.readtext(screenshot_np)
     
@@ -69,7 +73,7 @@ def capture_and_read(x, y, width, height, mask_type=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Capture screen and apply mask based on given argument.")
-    parser.add_argument('-s', '--mask', choices=['black', 'white'], help='Type of subtitles in video. Choose white for black subtitles')
+    parser.add_argument('-s', '--mask', choices=['black', 'white'], help='Type of subtitles in video. Choose black for black subtitles')
     args = parser.parse_args()
     print("Please drag the mouse over the area you want to capture...")
     listener_instance = ClickListener()
