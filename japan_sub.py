@@ -59,9 +59,9 @@ def capture_and_read(x, y, width, height, mask_type=None):
         # Flip black pixels to white
         screenshot_np[~white_mask] = [255, 255, 255]    
     
-    plt.imshow(screenshot_np)
-    plt.axis('off')  # to turn off axis numbers
-    plt.show()
+    #plt.imshow(screenshot_np)
+    #plt.axis('off')  # to turn off axis numbers
+    #plt.show()
     # Use EasyOCR to extract text
     results = reader.readtext(screenshot_np)
     
