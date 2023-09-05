@@ -41,7 +41,7 @@ def capture_and_read(x, y, width, height, mask_type=None):
     # Apply mask based on the given argument
 
     if mask_type == 'black':
-        mask = np.all(screenshot_np - [255, 255, 255] < , axis=-1)
+        mask = np.all(screenshot_np != [255, 255, 255], axis=-1)
         screenshot_np[mask] = [0, 0, 0]
     elif mask_type == 'white':
         mask = np.all(screenshot_np != [0, 0, 0], axis=-1)
@@ -69,7 +69,7 @@ def capture_and_read(x, y, width, height, mask_type=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Capture screen and apply mask based on given argument.")
-    parser.add_argument('-s', '--mask', choices=['black', 'white'], help='Type of subtitles in video. Choose black for black subtitles')
+    parser.add_argument('-s', '--mask', choices=['black', 'white'], help='Type of subtitles in video. Choose white for black subtitles')
     args = parser.parse_args()
     print("Please drag the mouse over the area you want to capture...")
     listener_instance = ClickListener()
@@ -90,4 +90,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
